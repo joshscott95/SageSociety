@@ -1,41 +1,168 @@
-# Module3 Project Gamma
+# SageSociety
 
-## Getting started
+Project Team:
 
-You have a project repository, now what? The next section
-lists all of the deliverables that are due at the end of the
-week. Below is some guidance for getting started on the
-tasks for this week.
+- **(Nate Axness)** - Gardens
+- **(Nick De La Flor)** - Plants
+- **(Joshua Scott)** - Groups
+- **(Alec Weinstein)** - Blogs
 
-## Install Extensions
+# Intended Market:
+ - The target market for SageSociety are entry-level/hobbyist gardeners who are looking for a one-stop application to help them manage their garden from setup to harvest.
 
-- Prettier: <https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode>
-- Black Formatter: <https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter>
+# Functionality:
+ - Users are able to visit the site, register for an account, create a virtual garden to help manage their IRL garden, add plants to that garden, create a blog to document their garden’s progress, and join an online community of fellow gardeners.
+ - Registration to the site unlocks all the features of SageSociety:
+ - Users can create multiple virtual gardens in which they can,
+   Show details of that garden, such as sun exposure, garden types (ie raised bed, in ground, hydroponic, etc…), soil pH.
+ - View real-time weather conditions at each garden’s zip-code.
+ - Locate a soil testing facility in their area.
+ - Users can add Plants to their Gardens to,
+ - Document when the plant was planted.
+ - Show off pictures of their plant to the rest of SageSociety.
+ - Receive interesting details about each plant.
+ - Receive custom AI-generated care instructions for each plant in their garden.
+ - Users can create a Blog to:
+   use as a journal that documents their gardening journey.
+   share their garden progress with the world.
+ - Users can create Groups to:
+   communicate with fellow Sages.
+   explore communities to learn more about regional gardening.
 
-## Deliverables
 
-- [ ] Wire-frame diagrams
-- [ ] API documentation
-- [ ] Project is deployed to Caprover (BE, DB) & GitLab-pages (FE)
-- [ ] GitLab issue board is setup and in use (or project management tool of choice)
-- [ ] Journals
 
-## Project layout
+## How to Run this App
 
-The layout of the project is just like all of the projects
-you did with `docker-compose` in module #2. You will create
-a directory in the root of the repository for each service
-that you add to your project just like those previous
-projects were setup.
+**Pre-reqs: Git, Docker**
 
-### Directories
+1. Fork the repository; clone its files to your local machine using the terminal command below: - `git clone <<Clone with HTTPS link>>`
+   ​
+2. Build and run the project with the following Docker commands in your terminal:
+   ```
+   docker volume create postgres-data
+   docker-compose build
+   docker-compose up
+   ```
+3. Verify that each Docker container is running; there should be (3) in total:
 
-Several directories have been added to your project. The
-directories `docs` and `journals` are places for you and
-your team-mates to, respectively, put any documentation
-about your project that you create and to put your
-project-journal entries. See the _README.md_ file in each
-directory for more info.
+   - postgres-data (PostgreSQL)
+   - ghi-1 (Front-end React Application)
+   - fastapi-1 (Back-end FastAPI Service)
+
+4. You can view the SageSociety web app in your browser @ http://localhost:3000/.
+
+## Diagram
+
+```mermaid
+graph TD;
+    subgraph SageSociety
+        A1(User Components) -->|GET /api/accounts| B(FastAPI)
+        A1 -->|POST /token| B
+        A2(Garden Components) -->|GET /api/gardens| B
+        A2 -->|POST /api/gardens| B
+        A3(Plant Components) -->|GET /api/plants| B
+        A3 -->|POST /api/plants| B
+        A4(Group Components) -->|GET /api/groups| B
+        A4 -->|POST /api/groups| B
+        A5(Blog Components) -->|GET /api/blogs| B
+        A5 -->|POST /api/blogs| B
+        A6(Comment Components) -->|GET /api/comments| B
+        A6 -->|POST /api/comments| B
+        B -.->|CRUD Operations|F[Database PostgreSQL]
+end
+```
+
+​
+
+# API Documentation
+
+## URLs and Ports
+
+1. SageSociety Web App:
+   - http://localhost:3000/
+2. FastAPI Backend:
+   - http://localhost:8000/docs/
+
+## Backend FastAPI
+
+For this microservice, we utilized the following models (and properties) listed below:
+
+1. Model: 'Accounts'
+
+   - username
+   - password
+   - first name
+   - last name
+   - email
+   - phone number
+
+2. Model: 'Gardens'
+
+   - gardens_id (primary key)
+   - gardens_name
+   - description
+   - accounts_id (foreign key referencing 'Accounts')
+
+3. Model: 'Plants'
+
+   - plants_id (primary key)
+   - plants_name
+   - planted_date (timestamp)
+   - description
+   - gardens_id (foreign key referencing 'Gardens')
+
+4. Model: 'Groups'
+
+   - groups_id (primary key)
+   - groups_name
+   - description
+
+5. Model: 'Groups_members'
+
+   - groups_id (foreign key referencing 'Groups')
+   - accounts_id (foreign key referencing 'Accounts')
+   - (composite primary key on groups_id and accounts_id)
+
+6. Model: 'Groups_comments'
+
+   - comments_id (primary key)
+   - content
+   - authors_id (foreign key referencing 'Accounts')
+   - groups_id (foreign key referencing 'Groups')
+   - created_at (timestamp with default value)
+
+7. Model: 'Blogs'
+
+   - blogs_id (primary key)
+   - accounts_id (foreign key referencing 'Accounts')
+   - title
+
+8. Model: 'Blogs_post'
+
+   - blogs_post_id (primary key)
+   - blogs_id (foreign key referencing 'Blogs')
+   - title
+   - picture_url
+   - text
+
+9. Model: 'Blogs_post_comment'
+   - blogs_post_comment_id (primary key)
+   - accounts_id (foreign key referencing 'Accounts')
+   - blogs_post_id (foreign key referencing 'Blogs_post')
+   - text
+
+## Localhost:8000/docs
+
+| Action        | URL                        |     |     |     |
+| ------------- | -------------------------- | --- | --- | --- |
+| All Endpoints | http://localhost:8000/docs |     |     |     |
+
+
+## Deployed site
+| Action | URL                                                    |     |     |     |
+| ------ | ------------------------------------------------------ | --- | --- | --- |
+| Web    | https://04-floridaman.gitlab.io/module3-project-gamma/ |     |     |     |
+
 
 The other directories, `ghi` and `api`, are services, that
 you can start building off of.
